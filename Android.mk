@@ -2,9 +2,22 @@ LOCAL_PATH := $(call my-dir)
 include $(CLEAR_VARS)
 
 LOCAL_SRC_FILES := \
+	nt_df.cpp \
+	nt_du.cpp \
+	nt_file_exists.cpp \
+	nt_get_owner.cpp \
+	nt_list_links.cpp \
+	nt_mounter.cpp \
+	nt_read_file.cpp \
+	nt_recursive_chown.cpp \
+	nt_recursive_cp.cpp \
+	nt_recursive_crawl.cpp \
+	nt_recursive_remove.cpp \
+	\
+	nt_utils.cpp \
 	nativetools.cpp
 
-LOCAL_C_INCLUDES := external/e2fsprogs/lib
+LOCAL_C_INCLUDES := external/cfr/lib
 
 LOCAL_CFLAGS := -Os -g -W -Wall \
 	-DHAVE_UNISTD_H \
