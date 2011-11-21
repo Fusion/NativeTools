@@ -18,61 +18,92 @@ Please have a look at the LICENSE file to learn about your options when using th
 ## Usage
 
 ### Linking
+
 This code can be incorporated directly in your own software or may be kept independent and you may invoke it through the shell. Note that this code does not have to be run by a root user, as this will depend on your needs.
 
 ### Syntax
+
 When you build a binary, if can be invoked one of two ways:
+
 #### The argument way
+
 Assuming that you are preserving the package's default name of `nativetools`:
+
     nativetools <action name> <action parameters>
 
 For instance:
+
     nativetools df /data/data
+
 which will return disk usage information for that partition.
+
 #### The alias way
+
 Like other packages, such as BusyBox, you can create aliases to the main binary and it will detect which command you are trying to execute based on that alias' name.
 
 For instance:
+
     ln -s nativetools df
     ./df /data/data
+
 which will behave the same way as the previous example.
+
 #### Output
+
 Currently, the output produced by this code is very simplistic: our goal is to provide output that can be easily parsed by another process of piece of code.
 
-Way may, in the future, provide a more "shell-like" output, should the need arise.
+We may, in the future, provide a more "shell-like" output, should the need arise.
 
 All output typically looks like this:
+
     < letter >,< value#1 >,< value#2 >,…,< value#n >
+
 `< letter >` is a convenient way to confirm that the output matches the command you issued. For instance, `df /data/data` will return:
+
     D,152576,144420,8156,4096
+
 The first letter will confirm that this is the output for 'df', the first number will be the partition's total size, the second one will be space used, the third one will be space available and the last one will be that partition's block size.
+
 ### Building
+
 If you are not building for Android, you are welcome to use your own toolchain.
 
 If you are building for Android, several toolchains are available.
 
 #### Using the ndk
+
 You need to install the ndk first and set your path correctly.
 
 When this is done, you can build the source tree using:
+
     ./ndk-comp++ nativetools.cpp < applet#1 > … < applet#n > -o nativetools
+
 #### Using a ROM toolchain
+
 For instance, to build using the CyanogenMod7 toolchain:
+
     cd < toolchain path >/android/system
     mkdir external/nativetools
+
 Drop your files in this new directory,
 
 Edit `build/core/main.mk`. This line:
+
         external/zlib \
+
 becomes:
+
         external/nativetools \
         external/zlib \ 
+
 (You may need to modify the file in multiple places)
 
 Don't forget that Cyanogen lets you build a single directory:
+
     mmm external/nativetools
     
 ### Currently available
+
 These commands are currently implemented:
 
 * df < partition > *partition usage*
@@ -88,37 +119,51 @@ These commands are currently implemented:
 * rm < directory path > *recursively delete directory structure*
 
 ### Creating new applets
+
 Adding new commands is very simple as each command is defined as a C or C++ applet.
 
 #### Step 1: Create new applet
+
 Create a new file that you will store in nativetool's main directory. For example, let's call this file `nt_my_applet.cpp`
 
 Here is the minimum code that you will need to put in this file:
+
     #include "nativetools.hpp"
     int nt_my_applet(int argc, char** argv, char** env) {
         int ret = EXIT_SUCCESS;
         return ret;
     }
+
 Obviously, this applet doesn't do anything.
+
 #### Step 2: Tell everybody about the applet
+
 First, add the applet to `Android.mk` so that it will build:
+
     LOCAL_SRC_FILES := \
         ...
         nt_my_applet.cpp \
     	\
     	nt_utils.cpp \
     	nativetools.cpp
+
 Now, declare the applet so that nativetools will be aware of its existence. In `nt_applets.hpp`:
+
 	APPLET(nt_my_applet);
+
 Be sure to declare it in the correct section (C or C++)
 
 Then:
+
 	APPLET_DEF applets[] = {
         …
         {"myapplet", &nt_my_applet}
     };
+
 That's all!
+
 ## FAQ
+
 **Why the dual license?**
 
 Because [I agree with Zed Shaw](http://zedshaw.com/essays/why_i_gpl.html). Of course, I did not produce software that's as broadly used as his so that may explain why I do not have a chip on my shoulder the size of his.
